@@ -1,11 +1,16 @@
-FROM alpine:3.3
+FROM alpine:latest
 
 MAINTAINER Olivier Pichon <op@united-asian.com>
 
-RUN apk add --update \
+RUN apk update && apk add --update \
 		curl \
 		nginx \
-		supervisor
+		supervisor \
+	&& adduser -D -S -h /var/www -s /sbin/nologin -G www-data www-data \
+	&& rm -rf /var/www/localhost \
+	&& cp -r /usr/share/nginx/html/* /var/www/
+
+COPY supervisord.conf /etc/supervisord.conf
 
 COPY supervisor.d/nginx.ini /etc/supervisor.d/nginx.ini
 
@@ -17,14 +22,14 @@ COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 
+VOLUME /var/www
+
+WORKDIR /var/www
+
 EXPOSE 80 443
-
-ONBUILD COPY entrypoint.d /entrypoint.d
-
-ONBUILD COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 ONBUILD COPY nginx/conf.d /etc/nginx/conf.d
 
-ONBUILD COPY . /usr/share/nginx/html
+ONBUILD COPY . /var/www
 
 ENTRYPOINT "/entrypoint.sh"
