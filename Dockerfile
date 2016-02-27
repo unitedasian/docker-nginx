@@ -2,11 +2,14 @@ FROM alpine:latest
 
 MAINTAINER Olivier Pichon <op@united-asian.com>
 
-RUN apk update && apk add --update \
+RUN echo "http://nl.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+	&& apk update && apk add --update \
 		curl \
 		nginx \
+		shadow \
 		supervisor \
 	&& adduser -D -S -h /var/www -s /sbin/nologin -G www-data www-data \
+	&& usermod -u 1000 www-data \
 	&& rm -rf /var/www/localhost \
 	&& cp -r /usr/share/nginx/html/* /var/www/
 
