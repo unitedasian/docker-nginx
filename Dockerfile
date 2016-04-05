@@ -8,6 +8,7 @@ RUN echo "http://nl.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositorie
 		nginx \
 		shadow \
 		supervisor \
+	&& rm -rf /var/cache/apk/* \
 	&& adduser -D -S -h /var/www -s /sbin/nologin -G www-data www-data \
 	&& usermod -u 1000 www-data \
 	&& rm -rf /var/www/localhost \
